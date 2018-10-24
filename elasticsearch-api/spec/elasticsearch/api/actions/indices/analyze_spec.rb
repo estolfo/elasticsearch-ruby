@@ -90,4 +90,19 @@ describe 'client.indices#analyze' do
       expect(client_double.indices.analyze(index: 'foo^bar', text: 'Test')).to eq({})
     end
   end
+
+  context 'when the text param must be URL-escaped' do
+
+    let(:url) do
+      'foo/_analyze'
+    end
+
+    let(:params) do
+      { text: '%E4%BD%A0%E5%A5%BD', index: 'foo' }
+    end
+
+    it 'performs the request' do
+      expect(client_double.indices.analyze(index: 'foo', text: '你好')).to eq({})
+    end
+  end
 end

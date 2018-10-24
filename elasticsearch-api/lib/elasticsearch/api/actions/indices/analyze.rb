@@ -53,6 +53,7 @@ module Elasticsearch
 
           params = Utils.__validate_and_extract_params arguments, ParamsRegistry.get(__method__)
           params[:filters] = Utils.__listify(params[:filters]) if params[:filters]
+          params[:text] = Utils.__listify(params[:text]) if params[:text]
 
           body   = arguments[:body]
 
