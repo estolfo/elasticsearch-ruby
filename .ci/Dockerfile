@@ -6,10 +6,11 @@ WORKDIR /usr/src/app
 COPY . .
 
 RUN bundle install
-RUN bundle exec rake setup
-RUN bundle exec rake elasticsearch:update
 RUN rake bundle:clean
 RUN rake bundle:install
+RUN bundle exec rake setup
+RUN bundle exec rake elasticsearch:update
+
 
 
 CMD [ "bundle", "exec", "rake", "test:unit"]
