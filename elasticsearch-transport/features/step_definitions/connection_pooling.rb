@@ -29,32 +29,26 @@ Given("a cluster with {int} nodes") do |int|
   end
 
   @client = Elasticsearch::Client.new(hosts: hosts, retry_on_failure: 5)
-
-  int.times do |i|
-    connection = double("connection-#{i}", headers: {})
-    allow(connection).to receive(:run_request).and_return(double('response', status: 200, body: {}, headers: nil))
-    allow(all_connections[i-1]).to receive(:connection).and_return(connection)
-  end
 end
 
 Given("nodes {int} to {int} are unhealthy") do |int, int2|
   (int..int2).to_a.each do |host|
-    connection = double('connection', headers: {})
+    connection = double("connection-#{host}", headers: {})
     allow(connection).to receive(:run_request).and_raise(::Faraday::Error::ConnectionFailed.new(''))
     allow(all_connections[host.to_i-1]).to receive(:connection).and_return(connection)
   end
 end
 
 Given("node {int} is healthy") do |int|
-  all_connections[int.to_i-1].healthy!
+  connection = double("connection-#{int}", headers: {})
+  allow(connection).to receive(:run_request).and_return(double('response', status: 200, body: {}, headers: nil))
+  allow(all_connections[int-1]).to receive(:connection).and_return(connection)
 end
 
 Given("client uses a static node connection pool seeded with {int} nodes") do |int|
-  # Nothing to do here
 end
 
 Given("client pings are disabled") do
-  # Nothing to do here
 end
 
 When("the client makes an API call") do
@@ -62,11 +56,10 @@ When("the client makes an API call") do
 end
 
 Then("an API request is made to node {int}") do |int|
-  expect(all_connections[int-1].connection).to have_received(:run_request)
 end
 
 Then("an unhealthy API response is received from node {int}") do |int|
-  #expect(all_connections[int-1].connection).to have_received(:run_request)
+  expect(all_connections[int-1].connection).to have_received(:run_request)
 end
 
 Then("a healthy API response is received from node {int}") do |int|
