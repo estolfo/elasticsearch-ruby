@@ -71,3 +71,25 @@ Feature: First usage
     And an unhealthy API response is received from node 4
     And node 4 is removed from the connection pool
     And the client indicates maximum retries reached
+
+# This will fail because the request timeout in the client is per node
+# @todo This is supposed to be overall request timeout. The terminology for this timeout used below
+#   is "overall request timeout"
+#
+#  Scenario: Overall request timeout is respected when attempting retries across nodes that are slow to respond.
+#
+#    Given a cluster with 5 nodes
+#    And nodes 1 to 4 are unhealthy and respond to requests after 10 seconds
+#    And node 5 is healthy
+#    And client uses a static node connection pool seeded with 5 nodes
+#    And client pings are disabled
+#    And client requests timeout after 20 seconds
+#
+#    When the client makes an API call
+#    Then an API request is made to node 1
+#    And an unhealthy API response is received from node 1
+#    And node 1 is removed from the connection pool
+#    And an API request is made to node 2
+#    And an unhealthy API response is received from node 2
+#    And node 2 is removed from the connection pool
+#    And the client indicates maximum timeout reached
