@@ -44,3 +44,27 @@ Feature: First usage
     And node 4 is removed from the connection pool
     And an API request is made to node 5
     And a healthy API response is received from node 5
+
+  Scenario: A maxiumum number of retries can be specified to limit the number of nodes that can be failed over. The total number of requests will be the initial attempt + number of retries.
+
+    Given a cluster with 5 nodes
+    And nodes 1 to 4 are unhealthy
+    And node 5 is healthy
+    And client uses a static node connection pool seeded with 5 nodes
+    And client pings are disabled
+    And client retries requests 3 times
+
+    When the client makes an API call
+    Then an API request is made to node 1
+    And an unhealthy API response is received from node 1
+    And node 1 is removed from the connection pool
+    And an API request is made to node 2
+    And an unhealthy API response is received from node 2
+    And node 2 is removed from the connection pool
+    And an API request is made to node 3
+    And an unhealthy API response is received from node 3
+    And node 3 is removed from the connection pool
+    And an API request is made to node 4
+    And an unhealthy API response is received from node 4
+    And node 4 is removed from the connection pool
+    And the client indicates maximum retries reached

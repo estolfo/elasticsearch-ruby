@@ -41,7 +41,8 @@ end
 
 Given("node {int} is healthy") do |int|
   connection = double("connection-#{int}", headers: {})
-  allow(connection).to receive(:run_request).and_return(double('response', status: 200, body: {}, headers: nil))
+  allow(connection).to receive(:run_request).and_return(
+      double('response', status: 200, body: {}, headers: nil))
   allow(all_connections[int-1]).to receive(:connection).and_return(connection)
 end
 
@@ -52,7 +53,7 @@ Given("client pings are disabled") do
 end
 
 When("the client makes an API call") do
-  @client.search
+  @result = begin; @client.search; rescue; end
 end
 
 Then("an API request is made to node {int}") do |int|
@@ -68,4 +69,12 @@ end
 
 Then("node {int} is removed from the connection pool") do |int|
   expect(all_connections[int-1].dead?).to eq(true)
+end
+
+Given("client retries requests {int} times") do |int|
+  @client.transport.instance_variable_set(:@max_retries, int)
+end
+
+Then("the client indicates maximum retries reached") do
+  expect(@result).to be_nil
 end
