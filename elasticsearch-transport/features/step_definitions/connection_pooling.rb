@@ -16,7 +16,7 @@
 # under the License.
 
 module MaxRetryWorld
-  def all_connections(client)
+  def all_connections
     @client.transport.connections.all
   end
 end
@@ -34,12 +34,12 @@ Given("nodes {int} to {int} are unhealthy") do |int, int2|
   (int..int2).to_a.each do |host|
     connection = double('connection', headers: {})
     allow(connection).to receive(:run_request).and_raise(::Faraday::Error::ConnectionFailed.new(''))
-    allow(all_connections(@client)[host.to_i-1]).to receive(:connection).and_return(connection)
+    allow(all_connections[host.to_i-1]).to receive(:connection).and_return(connection)
   end
 end
 
 Given("node {int} is healthy") do |int|
-  all_connections(@client)[int.to_i-1].healthy!
+  all_connections[int.to_i-1].healthy!
 end
 
 Given("client uses a static node connection pool seeded with {int} nodes") do |int|
@@ -54,7 +54,7 @@ When("the client makes an API call") do
 end
 
 Then("an API request is made to node {int}") do |int|
-  expect(all_connections(@client)[int-1].connection).to receive(:run_request)
+  expect(all_connections[int-1].connection).to receive(:run_request)
 end
 
 Then("an unhealthy API response is received from node {int}") do |int|
@@ -62,5 +62,5 @@ Then("an unhealthy API response is received from node {int}") do |int|
 end
 
 Then("node {int} is removed from the connection pool") do |int|
-  expect(all_connections(@client)[int-1].dead?).to eq(true)
+  expect(all_connections[int-1].dead?).to eq(true)
 end
