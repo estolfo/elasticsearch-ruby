@@ -24,12 +24,12 @@ Feature: First usage
   Scenario: Retry for every known node in the cluster, the client will automatically fail over to each node for a single API call.
 
     Given a cluster with 5 nodes
+    # @todo: ADD the following
+    And client retries requests 5 times
     And nodes 1 to 4 are unhealthy
     And node 5 is healthy
     And client uses a static node connection pool seeded with 5 nodes
     And client pings are disabled
-    # @todo: ADD the following
-    And client retries requests 5 times
 
     When the client makes an API call
     Then an API request is made to node 1
@@ -50,11 +50,12 @@ Feature: First usage
   Scenario: A maxiumum number of retries can be specified to limit the number of nodes that can be failed over. The total number of requests will be the initial attempt + number of retries.
 
     Given a cluster with 5 nodes
+    # @todo: put this condition here
+    And client retries requests 3 times
     And nodes 1 to 4 are unhealthy
     And node 5 is healthy
     And client uses a static node connection pool seeded with 5 nodes
     And client pings are disabled
-    And client retries requests 3 times
 
     When the client makes an API call
     Then an API request is made to node 1
