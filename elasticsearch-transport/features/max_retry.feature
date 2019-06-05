@@ -28,6 +28,8 @@ Feature: First usage
     And node 5 is healthy
     And client uses a static node connection pool seeded with 5 nodes
     And client pings are disabled
+    # @todo: ADD the following
+    And client retries requests 5 times
 
     When the client makes an API call
     Then an API request is made to node 1

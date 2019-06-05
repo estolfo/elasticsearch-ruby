@@ -28,7 +28,7 @@ Given("a cluster with {int} nodes") do |int|
     { host: i }
   end
 
-  @client = Elasticsearch::Client.new(hosts: hosts, retry_on_failure: 5)
+  @client = Elasticsearch::Client.new(hosts: hosts)
 end
 
 Given("nodes {int} to {int} are unhealthy") do |int, int2|
@@ -73,6 +73,7 @@ end
 
 Given("client retries requests {int} times") do |int|
   @client.transport.instance_variable_set(:@max_retries, int)
+  @client.transport.instance_variable_get(:@options)[:retry_on_failure] = 5
 end
 
 Then("the client indicates maximum retries reached") do
