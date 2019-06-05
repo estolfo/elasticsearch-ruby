@@ -27,7 +27,14 @@ Given("a cluster with {int} nodes") do |int|
   hosts = int.times.collect do |i|
     { host: i }
   end
-  @client = Elasticsearch::Client.new(hosts: hosts)
+
+  @client = Elasticsearch::Client.new(hosts: hosts, retry_on_failure: 5)
+
+  int.times do |i|
+    connection = double("connection-#{i}", headers: {})
+    allow(connection).to receive(:run_request).and_return(double('response', status: 200, body: {}, headers: nil))
+    allow(all_connections[i-1]).to receive(:connection).and_return(connection)
+  end
 end
 
 Given("nodes {int} to {int} are unhealthy") do |int, int2|
@@ -51,14 +58,19 @@ Given("client pings are disabled") do
 end
 
 When("the client makes an API call") do
+  @client.search
 end
 
 Then("an API request is made to node {int}") do |int|
-  expect(all_connections[int-1].connection).to receive(:run_request)
+  expect(all_connections[int-1].connection).to have_received(:run_request)
 end
 
 Then("an unhealthy API response is received from node {int}") do |int|
-  begin; @client.cluster.stats; rescue; end
+  #expect(all_connections[int-1].connection).to have_received(:run_request)
+end
+
+Then("a healthy API response is received from node {int}") do |int|
+  expect(all_connections[int-1].connection).to have_received(:run_request)
 end
 
 Then("node {int} is removed from the connection pool") do |int|

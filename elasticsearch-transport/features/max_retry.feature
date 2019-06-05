@@ -33,14 +33,14 @@ Feature: First usage
     Then an API request is made to node 1
     And an unhealthy API response is received from node 1
     And node 1 is removed from the connection pool
-#    And an API request is made to node 2
-#    And an unhealthy API response is received from node 2
-#    And node 2 is removed from the connection pool
-#    And an API request is made to node 3
-#    And an unhealthy API response is received from node 3
-#    And node 3 is removed from the connection pool
-#    And an API request is made to node 4
-#    And an unhealthy API response is received from node 4
-#    And node 4 is removed from the connection pool
-#    And an API request is made to node 5
-#    And a healthy API response is received from node 5
+    And an API request is made to node 2
+    And an unhealthy API response is received from node 2
+    And node 2 is removed from the connection pool
+    And an API request is made to node 3
+    And an unhealthy API response is received from node 3
+    And node 3 is removed from the connection pool
+    And an API request is made to node 4
+    And an unhealthy API response is received from node 4
+    And node 4 is removed from the connection pool
+    And an API request is made to node 5
+    And a healthy API response is received from node 5
