@@ -19,38 +19,50 @@ module MaxRetryWorld
   def all_connections
     @client.transport.connections.all
   end
+
+  def max_retries
+    @max_retries || 5
+  end
 end
 
 World(MaxRetryWorld)
 
 Given("a cluster with {int} nodes") do |int|
-  @hosts = int.times.collect do |i|
-    { host: i }
+  @connections = int.times.collect do |i|
+    double("connection-#{i}", headers: {}, host: i)
   end
 end
 
 Given("nodes {int} to {int} are unhealthy") do |int, int2|
-  (int..int2).to_a.each do |host|
-    connection = double("connection-#{host}", headers: {})
-    allow(connection).to receive(:run_request).and_raise(::Faraday::Error::ConnectionFailed.new(''))
-    allow(all_connections[host.to_i-1]).to receive(:connection).and_return(connection)
+  (int..int2).each do |i|
+    allow(@connections[i-1]).to receive(:run_request).and_raise(::Faraday::Error::ConnectionFailed.new(''))
   end
 end
 
 Given("node {int} is healthy") do |int|
-  connection = double("connection-#{int}", headers: {})
-  allow(connection).to receive(:run_request).and_return(
+  allow(@connections[int-1]).to receive(:run_request).and_return(
       double('response', status: 200, body: {}, headers: nil))
-  allow(all_connections[int-1]).to receive(:connection).and_return(connection)
 end
 
-Given("client uses a static node connection pool seeded with {int} nodes") do |int|
+Given("client configuration specifies {int} nodes") do |int|
+  @hosts = @connections[0...int].collect { |c| { host: c.host } }
 end
 
-Given("client pings are disabled") do
+Given("the client is created") do
+  @client = Elasticsearch::Client.new(hosts: @hosts, retry_on_failure: max_retries)
+  @client.transport.connections.each_with_index do |c, i|
+    allow(c).to receive(:connection).and_return(@connections[i])
+  end
 end
 
-When("the client makes an API call") do
+Given("pings are disabled") do
+end
+
+Given("{int} maximum retries") do |int|
+  @max_retries = int
+end
+
+When("client makes an API call") do
   @result = begin; @client.search; rescue; end
 end
 
