@@ -1,21 +1,7 @@
-# Licensed to Elasticsearch B.V. under one or more contributor
-# license agreements. See the NOTICE file distributed with
-# this work for additional information regarding copyright
-# ownership. Elasticsearch B.V. licenses this file to you under
-# the Apache License, Version 2.0 (the "License"); you may
-# not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#	http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing,
-# software distributed under the License is distributed on an
-# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-# KIND, either express or implied.  See the License for the
-# specific language governing permissions and limitations
-# under the License.
+# Licensed to Elasticsearch B.V under one or more agreements.
+# Elasticsearch B.V licenses this file to you under the Apache 2.0 License.
+# See the LICENSE file in the project root for more information
 
-# @todo: Is it necessary to have the timeouts so high?
 # @todo: The Ruby client doesn't have a per-request timeout option
 #Feature: Request timeout overrides
 #
@@ -23,14 +9,19 @@
 #
 #  Scenario: Overriding the request timeout on a per request basis.
 #
+#		# Cluster configuration
 #    Given a cluster with 10 nodes
 #    And nodes 1 to 9 are unhealthy and respond to requests after 10 seconds
 #    And node 10 is healthy
-#    And client uses a static node connection pool seeded with 10 nodes
-#    And client pings are disabled
-#    And client requests timeout after 20 seconds
 #
-#    When the client makes an API call
+#		# Client configuration
+#    Given client configuration specifies 10 nodes
+#    And pings are disabled
+#    And requests timeout after 20 seconds
+#
+#    When the client is created
+#    And client makes an API call
+#
 #    Then an API request is made to node 1
 #    And an unhealthy API response is received from node 1
 #    And node 1 is removed from the connection pool
@@ -39,7 +30,8 @@
 #    And node 2 is removed from the connection pool
 #    And the client indicates maximum timeout reached
 #
-#    When the client makes an API call with request timeout set to 80 seconds
+#    When client makes an API call with request timeout set to 80 seconds
+#
 #    Then an API request is made to node 3
 #    And an unhealthy API response is received from node 3
 #    And node 3 is removed from the connection pool
@@ -63,21 +55,26 @@
 #    And node 9 is removed from the connection pool
 #    And an API request is made to node 10
 #    And a healthy API response is received from node 10
-
-# @todo: The Ruby client doesn't have a per-request timeout option
+#
 #  Scenario: Overriding ping timeouts on a per request basis.
 #
+#		# Cluster configuration
 #    Given a cluster with 10 nodes
 #    And all nodes respond to pings after 20 seconds
-#    And client pings timeout after 10 seconds
-#    And client uses a static node connection pool seeded with 10 nodes
 #
-#    When the client makes an API call
+#		# Client configuration
+#    Given client configuration specifies 10 nodes
+#    And pings timeout after 10 seconds
+#
+#    When the client is created
+#    And client makes an API call
+#
 #    Then a ping request is made to node 1
 #    And ping request timeout for node 1 is reached
 #    And the client indicates maximum timeout reached
 #
-#    When the client makes another API call with ping timeout set to 2 seconds
+#    When client makes another API call with ping timeout set to 2 seconds
+#
 #    Then a ping request is made to node 3
 #    And ping request timeout for node 3 is reached
 #    And a ping request is made to node 4

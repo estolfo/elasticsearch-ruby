@@ -80,6 +80,7 @@ Feature: First usage
     And node 4 is removed from the connection pool
     And the client indicates maximum retries reached
 
+# @todo The client doesn't have the ability to set an overall request timeout. A timeout can only be set as part of the transport_options.
 #  Scenario: Overall request timeout is respected when attempting retries across nodes that are slow to respond.
 #
 #	# Cluster configuration
@@ -103,6 +104,7 @@ Feature: First usage
 #    And node 2 is removed from the connection pool
 #    And the client indicates maximum timeout reached
 
+# @todo Do you mean overall request timeout?
 #  Scenario: An overall retry timeout can be specified to help contain individual request timeouts.
 #
 #	# Cluster configuration
@@ -135,10 +137,12 @@ Feature: First usage
 #    And node 5 is removed from the connection pool
 #    And the client indicates maximum timeout reached
 
+# @todo Ruby client doesn't have a total request timeout (line 151)
 #  Scenario: The client will not retry the same node twice.
 #
 #	# Cluster configuration
 #    Given a cluster with 2 nodes
+#    # @todo can we please split this up into two lines?
 #    And all nodes are unhealthy and respond to requests after 3 seconds
 #
 #	# Client configuration

@@ -62,6 +62,23 @@ Given("{int} maximum retries") do |int|
   @max_retries = int
 end
 
+Given("all nodes are unhealthy and respond to requests after {int} seconds") do |int|
+  @connections.each do |conn|
+    allow(conn).to receive(:run_request).and_raise(::Faraday::Error::ConnectionFailed.new(''))
+  end
+end
+
+
+Given("all nodes are unhealthy") do
+  @connections.each do |conn|
+    allow(conn).to receive(:run_request).and_raise(::Faraday::Error::ConnectionFailed.new(''))
+  end
+end
+
+Given("requests timeout after {int} seconds") do |int|
+
+end
+
 When("client makes an API call") do
   @result = begin; @client.search; rescue; end
 end
