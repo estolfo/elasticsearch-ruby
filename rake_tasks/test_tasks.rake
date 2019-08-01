@@ -22,6 +22,14 @@ namespace :test do
     end
   end
 
+  task :unit_local do
+    UNIT_TESTED_PROJECTS.each do |project|
+      puts '-'*80
+      sh "cd #{CURRENT_PATH.join(project)} && unset BUNDLE_GEMFILE && BUNDLE_PATH=#{CURRENT_PATH.join(project)}/gems && unset BUNDLE_BIN && bundle exec rake test:unit"
+      puts "\n"
+    end
+  end
+
   desc "Run integration tests in all subprojects"
   task :integration do
     INTEGRATION_TESTED_PROJECTS.each do |project|
@@ -37,6 +45,12 @@ namespace :test do
   task :rest_api => ['elasticsearch:update', 'elasticsearch:wait_for_green'] do
     puts '-' * 80
     sh "cd #{CURRENT_PATH.join('elasticsearch-api')} && unset BUNDLE_GEMFILE && bundle exec rake test:integration"
+    puts "\n"
+  end
+
+  task :rest_api_local => ['elasticsearch:update', 'elasticsearch:wait_for_green'] do
+    puts '-' * 80
+    "cd #{CURRENT_PATH.join('elasticsearch-api')} && unset BUNDLE_GEMFILE && BUNDLE_PATH=#{CURRENT_PATH.join('elasticsearch-api')}/gems && unset BUNDLE_BIN && bundle exec rake test:integration"
     puts "\n"
   end
 

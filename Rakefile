@@ -6,6 +6,7 @@ import 'rake_tasks/elasticsearch_tasks.rake'
 import 'rake_tasks/test_tasks.rake'
 import 'profile/benchmarking/benchmarking_tasks.rake'
 require 'pathname'
+require 'pry-nav'
 
 CURRENT_PATH = Pathname( File.expand_path('..', __FILE__) )
 SUBPROJECTS = [ 'elasticsearch',
@@ -76,6 +77,16 @@ namespace :bundle do
     SUBPROJECTS.each do |project|
       puts '-'*80
       sh "cd #{CURRENT_PATH.join(project)} && unset BUNDLE_GEMFILE && bundle install"
+      puts
+    end
+  end
+
+  desc "Run `bundle install` locally in all subprojects"
+  task :install_local do
+    #sh 'mkdir gems && chmod +w gems'
+    SUBPROJECTS.each do |project|
+      puts '-'*80
+      sh "cd #{CURRENT_PATH.join(project)} && unset BUNDLE_GEMFILE && bundle install --path=#{CURRENT_PATH.join(project)}/gems"
       puts
     end
   end
